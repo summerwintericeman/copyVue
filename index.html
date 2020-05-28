@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" id="fullScreen">
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="description" content="">
+</head>
+
+<body>
+
+
+</body>
+
+<script>
+
+    // 创建一个对象
+    var library = {
+        book1: {
+            name: '书本1'
+        },
+        book2: '书本2',
+        book3: {
+            book4: {
+                book5: {
+                    name: "book5"
+                }
+            }
+        }
+    };
+
+
+    // Object.defineProperty(对象，属性，{修改内容}) 方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。
+    // 定义一个函数用来监听并修改属性
+    function observeAttr(obj, attr, value) {
+        // console.log(value)
+        // obj 监听的对象 
+        // attr监听的属性
+        // 需要处理的值
+        console.log(attr)
+        // 如果传过来的属性的值也是一个对象也需要进行遍历并监听里面的属性值  需要调用遍历函数
+        traverseObject(value)
+        // 监听属性
+        Object.defineProperty(obj, attr, {
+            enumerable: true, //当且仅当该属性的 enumerable 键值为 true 时，该属性才会出现在对象的枚举属性中。 如果为false 遍历时就会被忽略
+            configurable: true,//当且仅当该属性的 configurable 键值为 true 时，该属性的描述符才能够被改变，同时该属性也能从对应的对象上被删除。
+            get: function () { //当访问该属性时，会调用此函数
+                return value;
+            },
+            set: function (newVal) { //属性值被修改时，会调用此函数 方法接受一个参数（也就是被赋予的新值）    
+                value = newVal; //把新值赋值给属性           
+                console.log('属性' + attr, '属性的新值' + newVal)
+            }
+        })
+    }
+
+
+
+
+
+
+
+
+
+    // 遍历函数   遍历一个对象 获取他的 key 值 和value值  
+    function traverseObject(data) {
+        // Object.keys() 方法会返回一个由一个给定对象的自身可枚举属性组成的数组，数组中属性名的排列顺序和正常循环遍历该对象时返回的顺序一致
+        // 为了获取对象所有的key值
+        Object.keys(data).forEach(function (key) {
+            observeAttr(data, key, data[key])
+        })
+    }
+
+
+
+
+
+
+
+</script>
+
+</html>
