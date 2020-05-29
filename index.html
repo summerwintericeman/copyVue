@@ -5,10 +5,17 @@
     <meta charset="utf-8">
     <title></title>
     <meta name="description" content="">
+    <style>
+        #user1 {
+            line-height: 50px;
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
-
+    <div id="user1"></div>
+    <div id="user2"></div>
 
 </body>
 
@@ -86,45 +93,105 @@
 
     /*****************************************  实现发布订阅模式的例子         **************************************/
     // set是发布者 get是订阅者
-    // function observeAttr1(obj, attr, value) {
-    //     // console.log(value)
-    //     // obj 监听的对象 
-    //     // attr监听的属性
-    //     // 需要处理的值
-    //     // console.log(attr)
-    //     // 如果传过来的属性的值也是一个对象也需要进行遍历并监听里面的属性值  需要调用遍历函数
-    //     traverseObject(value)
-    //     //实例化一个对象 目的是收集观察者和发布消息
-    //     var dep = new Dep();
-    //     // 监听属性
-    //     Object.defineProperty(obj, attr, {
-    //         enumerable: true, //当且仅当该属性的 enumerable 键值为 true 时，该属性才会出现在对象的枚举属性中。 如果为false 遍历时就会被忽略
-    //         configurable: true,//当且仅当该属性的 configurable 键值为 true 时，该属性的描述符才能够被改变，同时该属性也能从对应的对象上被删除。
-    //         get: function () { //当访问该属性时，会调用此函数
-    //             console.log(Dep.target)
-    //             return value;
-    //         },
-    //         set: function (newVal) { //属性值被修改时，会调用此函数 方法接受一个参数（也就是被赋予的新值）    
-    //             value = newVal; //把新值赋值给属性           
-    //             console.log('属性' + attr, '属性的新值' + JSON.stringify(newVal))
-    //         }
-    //     })
-    // }
-    // //Dep构造函数
-    // function Dep() {
-    //     this.subs = [];
-    // }
-    // //Dep有两个方法，增加观察者  和  发布消息
-    // Dep.prototype = {
-    //     addSub: function (sub) {
-    //         this.subs.push(sub);
-    //     },
-    //     notify: function () {
-    //         this.subs.forEach(function (sub) {
-    //             sub.update();
-    //         });
-    //     }
-    // }
+
+
+    // 发布订阅者模式的简单介绍
+    //一家商店  客户询问价格 相当于订阅了你的产品  客户的询问就是订阅者
+    // 当你开始售卖的时候 公布价格就相当于发布者   
+    const shop = {};
+    shop.list = [];
+    // 订阅  涉及到一对多的关系 因此把所有的订阅者存放到一个数组中 
+    shop.listen = function (fn) {
+        this.list.push(fn)
+    }
+    // 发布消息 对每个订阅者 发布消息
+    shop.sell = function (iphone, price) {
+        console.log(arguments)
+        console.log(...arguments)
+        for (var i = 0, fn = this.list[i]; i < this.list.length; i++) {
+            fn(...arguments)
+        }
+    }
+    // 这是一个订阅的触发  订阅需要知道的信息 手机型号和价格
+    shop.listen(function (iphone, price) {
+        console.log('手机型号' + iphone);
+        console.log('价格' + price)
+    })
+    // 发布消息,本店卖IphoneX， 价格7000
+    // shop.sell('IphoneX', 7000);
+    // shop.sell('Iphone11', 9000);
+    // 输出 手机型号IphoneX, 价格7000
+    // 输出 手机型号Iphone11, 价格9000
+
+
+
+
+
+    // 对应新的模式 
+    const vue = {};
+    vue.list = [];
+    vue.data = {
+        name: 'wj',
+        age: 18
+    }
+
+    function renderHtml(data) {
+        var node = document.getElementById('user1');
+        node.innerHTML = data;
+    }
+
+    // 为所有的data的属性添加监听
+    traverseVueObject(vue.data)
+    function observeVueAttr(obj, attr, value) {
+        traverseVueObject(value)
+        Object.defineProperty(obj, attr, {
+            enumerable: true,
+            configurable: true,
+            get: function () {
+                vue.list.push(renderHtml)
+                return value;
+            },
+            set: function (newVal) {
+                value = newVal;
+                for (var i = 0, fn = vue.list[i]; i < vue.list.length; i++) {
+                    console.log(vue.list[i])
+                    fn(newVal)
+                }
+            }
+        })
+    }
+    function traverseVueObject(data) {
+        if (!data || typeof data !== 'object') {
+            return;
+        }
+        Object.keys(data).forEach(function (key) {
+            observeVueAttr(data, key, data[key])
+        })
+    }
+
+
+    var node = document.getElementById('user1');
+    node.innerHTML = vue.data.name;
+
+
+    setTimeout(function () {
+        vue.data.name = 'wjj'
+    }, 2000)
+
+
+
+
+    // 调用函数 为每个 data的属性添加监测  修改属性 相当于发布  使用属性相当于订阅 
+    // 在使用属性的时候get需要把使用属性的地方添加到 观察者列表   在修改属性的时候set需要发布消息
+    // 因此修改  observeDataAttr函数的set 和 get 
+
+
+
+
+
+
+
+
 
 
 
