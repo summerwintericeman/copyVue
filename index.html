@@ -16,6 +16,9 @@
 <body>
     <div id="user1"></div>
     <div id="user2"></div>
+    <div id="user3"></div>
+    <div id="user4"></div>
+    <div id="user5"></div>
 
 </body>
 
@@ -129,6 +132,7 @@
 
     // 对应新的模式 
     const vue = {};
+    // 观察者队列
     vue.list = [];
     vue.data = {
         name: 'wj',
@@ -148,6 +152,7 @@
             enumerable: true,
             configurable: true,
             get: function () {
+                // 使用属性的部分都需要添加到观察者队列中
                 vue.list.push(renderHtml)
                 return value;
             },
@@ -177,6 +182,29 @@
     setTimeout(function () {
         vue.data.name = 'wjj'
     }, 2000)
+
+
+
+// 以上只是实现一个数据的使用和绑定  
+// 现在设置许多数据都使用的情况
+// 需要处理模板编译问题 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
